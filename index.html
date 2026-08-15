@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<title>Kasatria Visualization Assignment</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<!-- Google Auth UI -->
+	<div id="loginOverlay">
+		<div class="login-card">
+			<h2 style="font-family: Arial, sans-serif; font-weight: normal; margin-bottom: 5px; color: black;">Welcome Back</h2>
+			<p style="font-size: 11px; color: #888; margin-bottom: 20px;">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</p>
+			<div id="g_id_onload"
+				data-client_id="234853963370-1e6v6r70t83th98ikqlg40hkop3seo89.apps.googleusercontent.com"
+				data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse"
+				data-auto_prompt="false">
+			</div>
+			<div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_blue"
+				data-text="signin_with" data-size="large" data-logo_alignment="left">
+			</div>
+		</div>
+	</div>
+
+	<!-- Three.js Container -->
+	<div id="container"></div>
+
+	<!-- Controls -->
+	<div id="menu">
+		<button id="table">TABLE</button>
+		<button id="sphere">SPHERE</button>
+		<button id="helix">HELIX</button>
+		<button id="grid">GRID</button>
+	</div>
+
+	<!-- Scripts -->
+	<!-- Import map for three.js -->
+	<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+				}
+			}
+		</script>
+	<!-- Global callback for Google Identity Services -->
+	<script>
+		window.handleCredentialResponse = function(response) {
+			window.googleCredentialResponse = response;
+			document.dispatchEvent(new Event('google-login-success'));
+		}
+	</script>
+	<!-- Google Identity Services -->
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<!-- App Logic -->
+	<script type="module" src="app.js"></script>
+</body>
+
+</html>
