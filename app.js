@@ -4,7 +4,6 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 // ---- Configuration ----
-// USER MUST REPLACE THESE WITH ACTUAL VALUES
 const GOOGLE_API_KEY = 'AIzaSyDZJ1_lt-EWt5YTeVakTHpTr_uNq5ght2Q';
 const SPREADSHEET_ID = '13gGmDWcx35vWY4Fp6C9jCcccHs0PaAp8LSsAgJ3jthY';
 const RANGE = "'Data Template'!A2:F201";
