@@ -149,39 +149,47 @@ function init() {
 	}
 
 	// 5. Pyramid (Tetrahedron)
-	const n0 = new THREE.Vector3(0, -1, 0);
-	const n1 = new THREE.Vector3(-Math.sqrt(8/9), 1/3, 0);
-	const n2 = new THREE.Vector3(Math.sqrt(2/9), 1/3, -Math.sqrt(2/3));
-	const n3 = new THREE.Vector3(Math.sqrt(2/9), 1/3, Math.sqrt(2/3));
+	// Vertices of an upright tetrahedron
+	const L = 1600; // side length
+	const H = L * Math.sqrt(2/3); // height
+	const V0 = new THREE.Vector3(0, H * 0.75, 0); // Top
+	const V1 = new THREE.Vector3(0, -H * 0.25, L / Math.sqrt(3)); // Front
+	const V2 = new THREE.Vector3(-L/2, -H * 0.25, -L / (2 * Math.sqrt(3))); // Back Left
+	const V3 = new THREE.Vector3(L/2, -H * 0.25, -L / (2 * Math.sqrt(3))); // Back Right
 	
-	const spherePos = new THREE.Vector3();
+	const faces = [
+		[V0, V1, V2, V3], // Face 0: Left-Front (opposite to V3)
+		[V0, V2, V3, V1], // Face 1: Back (opposite to V1)
+		[V0, V3, V1, V2], // Face 2: Right-Front (opposite to V2)
+		[V1, V3, V2, V0]  // Face 3: Bottom (opposite to V0)
+	];
+	
 	for (let i = 0; i < objects.length; i++) {
-		const phi = Math.acos(-1 + (2 * i) / objects.length);
-		const theta = Math.sqrt(objects.length * Math.PI) * phi;
-		
 		const target = new THREE.Object3D();
 		
-		spherePos.setFromSphericalCoords(1, phi, theta);
+		// 50 items per face (200 total)
+		const faceIndex = Math.floor(i / 50); 
+		const itemIndex = i % 50;
 		
-		const d0 = spherePos.dot(n0);
-		const d1 = spherePos.dot(n1);
-		const d2 = spherePos.dot(n2);
-		const d3 = spherePos.dot(n3);
+		const A = faces[faceIndex][0];
+		const B = faces[faceIndex][1];
+		const C = faces[faceIndex][2];
+		const oppositeVertex = faces[faceIndex][3];
 		
-		const maxDist = Math.max(d0, d1, d2, d3);
+		// Uniformly distribute 50 points on the triangle using Golden Ratio
+		const u = (itemIndex + 0.5) / 50; 
+		const v = (itemIndex * 0.61803398875) % 1;
+		const r1 = Math.sqrt(u);
+		const r2 = v;
 		
-		const R = 600; // Tetrahedron specific radius
-		spherePos.multiplyScalar(R / maxDist);
+		target.position.x = (1 - r1) * A.x + (r1 * (1 - r2)) * B.x + (r1 * r2) * C.x;
+		target.position.y = (1 - r1) * A.y + (r1 * (1 - r2)) * B.y + (r1 * r2) * C.y;
+		target.position.z = (1 - r1) * A.z + (r1 * (1 - r2)) * B.z + (r1 * r2) * C.z;
 		
-		let normal;
-		if (maxDist === d0) normal = n0;
-		else if (maxDist === d1) normal = n1;
-		else if (maxDist === d2) normal = n2;
-		else normal = n3;
+		// Outward normal is opposite to the opposite vertex
+		const outwardNormal = oppositeVertex.clone().negate().normalize();
 		
-		target.position.copy(spherePos);
-		target.lookAt(target.position.clone().add(normal));
-		
+		target.lookAt(target.position.clone().add(outwardNormal));
 		targets.pyramid.push(target);
 	}
 
