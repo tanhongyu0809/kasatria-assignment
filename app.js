@@ -12,7 +12,7 @@ const RANGE = "'Data Template'!A2:F201";
 let tableData = [];
 let camera, scene, renderer, controls;
 const objects = [];
-const targets = { table: [], sphere: [], helix: [], grid: [] };
+const targets = { table: [], sphere: [], helix: [], grid: [], pyramid: [] };
 
 // Listen for login success event from index.html
 document.addEventListener('google-login-success', () => {
@@ -148,6 +148,44 @@ function init() {
 		targets.grid.push(target);
 	}
 
+	// 5. Pyramid (Tetrahedron)
+	const n0 = new THREE.Vector3(0, -1, 0);
+	const n1 = new THREE.Vector3(-Math.sqrt(8/9), 1/3, 0);
+	const n2 = new THREE.Vector3(Math.sqrt(2/9), 1/3, -Math.sqrt(2/3));
+	const n3 = new THREE.Vector3(Math.sqrt(2/9), 1/3, Math.sqrt(2/3));
+	
+	const spherePos = new THREE.Vector3();
+	for (let i = 0; i < objects.length; i++) {
+		const phi = Math.acos(-1 + (2 * i) / objects.length);
+		const theta = Math.sqrt(objects.length * Math.PI) * phi;
+		
+		const target = new THREE.Object3D();
+		
+		spherePos.setFromSphericalCoords(1, phi, theta);
+		
+		const d0 = spherePos.dot(n0);
+		const d1 = spherePos.dot(n1);
+		const d2 = spherePos.dot(n2);
+		const d3 = spherePos.dot(n3);
+		
+		const maxDist = Math.max(d0, d1, d2, d3);
+		
+		const R = 600; // Tetrahedron specific radius
+		spherePos.multiplyScalar(R / maxDist);
+		
+		let normal;
+		if (maxDist === d0) normal = n0;
+		else if (maxDist === d1) normal = n1;
+		else if (maxDist === d2) normal = n2;
+		else normal = n3;
+		
+		target.position.copy(spherePos);
+		target.lookAt(target.position.clone().add(normal));
+		
+		targets.pyramid.push(target);
+	}
+
+
 	renderer = new CSS3DRenderer();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	document.getElementById('container').appendChild(renderer.domElement);
@@ -161,6 +199,7 @@ function init() {
 	document.getElementById('sphere').addEventListener('click', function () { transform(targets.sphere, 2000); });
 	document.getElementById('helix').addEventListener('click', function () { transform(targets.helix, 2000); });
 	document.getElementById('grid').addEventListener('click', function () { transform(targets.grid, 2000); });
+	document.getElementById('pyramid').addEventListener('click', function () { transform(targets.pyramid, 2000); });
 
 	transform(targets.table, 2000);
 
